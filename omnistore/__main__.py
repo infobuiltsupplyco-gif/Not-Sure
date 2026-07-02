@@ -29,6 +29,8 @@ def main() -> None:
     p_web = sub.add_parser("web", help="Launch the browser control room")
     p_web.add_argument("--port", type=int, default=None)
 
+    sub.add_parser("chat", help="Chat with your AI in the terminal")
+
     p_tiktok = sub.add_parser("tiktok", help="TikTok videos: plan → review → approve → post")
     tiktok_sub = p_tiktok.add_subparsers(dest="tiktok_command", required=True)
     p_tt_plan = tiktok_sub.add_parser("plan", help="Research trends and storyboard/render new videos")
@@ -46,7 +48,7 @@ def main() -> None:
         parser.print_help()
         return
 
-    needs_ai = args.command in ("run", "research", "social", "autopilot") or (
+    needs_ai = args.command in ("run", "research", "social", "autopilot", "chat") or (
         args.command == "tiktok" and args.tiktok_command == "plan"
     )
     if needs_ai and not CONFIG.anthropic_api_key:
@@ -73,6 +75,10 @@ def main() -> None:
     elif args.command == "web":
         from . import web
         web.start(port=args.port)
+
+    elif args.command == "chat":
+        from . import chat
+        chat.repl()
 
     elif args.command == "tiktok":
         from . import tiktok

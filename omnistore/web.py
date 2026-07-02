@@ -97,6 +97,7 @@ def home():
     return f"""<!doctype html><html><head><title>OmniStore</title><style>{STYLE}</style></head><body>
 {busy}{key_warn}
 <h1>🛒⚡ OmniStore <small>autonomous commerce engine</small></h1>
+<p><a href="/chat" style="color:#58a6ff;font-size:1.05rem">💬 Chat with your AI →</a></p>
 <div class="card">
   <span class="stat"><b>{_e(st.get('niche') or '—')}</b><small>niche</small></span>
   <span class="stat"><b>{len(st['launched_products'])}</b><small>products launched</small></span>
@@ -144,6 +145,42 @@ def _video_card(e: dict) -> str:
 def _tiktok_queue() -> list[dict]:
     from . import tiktok
     return tiktok._load_queue()
+
+
+@app.get("/chat")
+def chat_page():
+    from . import chat as chat_mod
+
+    key_warn = "" if CONFIG.anthropic_api_key else \
+        '<div class="banner">⚠️ <b>ANTHROPIC_API_KEY missing</b> — add it in your host\'s environment settings, then the AI can talk.</div>'
+    thinking = '<div class="banner">⏳ The AI is working on your last message — refresh in a moment.</div>' if _job["name"] == "chat" else ""
+
+    msgs = "".join(
+        f"<div class='card'><small>{'🧑 you' if m['role'] == 'user' else '🛒⚡ omnistore'}</small><br>"
+        f"{_e(m['content']).replace(chr(10), '<br>')}</div>"
+        for m in chat_mod.history()[-30:]
+    ) or "<div class='card'><small>Say hi. Try: “what's my status?” · “launch 3 products” · “make me a tiktok video”</small></div>"
+
+    return f"""<!doctype html><html><head><title>OmniStore Chat</title><style>{STYLE}</style></head><body>
+{key_warn}{thinking}
+<h1>💬 OmniStore <small><a href="/" style="color:#58a6ff">← dashboard</a></small></h1>
+{msgs}
+<form method="post" action="/chat" style="display:flex;gap:.5rem;margin-top:1rem">
+  <input name="message" autofocus autocomplete="off" placeholder="Tell your AI what to do..."
+         style="flex:1;background:#161b22;border:1px solid #21262d;border-radius:8px;color:#e6edf3;padding:.7rem 1rem;font-size:1rem">
+  <button>Send</button>
+</form>
+</body></html>"""
+
+
+@app.post("/chat")
+def chat_send():
+    from . import chat as chat_mod
+
+    msg = (request.form.get("message") or "").strip()
+    if msg and not _job["name"]:
+        _background("chat", chat_mod.chat_turn, msg)
+    return redirect("/chat")
 
 
 @app.post("/actions/run-cycle")
