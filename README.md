@@ -48,6 +48,22 @@ python -m omnistore status                            # what the engine has done
 | Facebook Page | page ID + page access token | Posts queued to `output/social_queue.jsonl` |
 | X / Twitter | OAuth2 user token (`tweet.write`) | Posts queued |
 | Instagram | requires an image pipeline (see roadmap) | Posts queued with an `image_prompt` you can use |
+| TikTok | developer app + `video.publish` OAuth token | Videos still render + queue; you post manually |
+
+## TikTok: AI-made videos, human-approved
+
+TikTok gets special treatment — every video needs **your explicit approval** before it posts, no exceptions:
+
+```bash
+python -m omnistore tiktok plan            # research live TikTok trends → storyboard + render videos
+python -m omnistore tiktok queue           # review captions, hashtags, scene-by-scene storyboards
+python -m omnistore tiktok approve --id X  # ONLY this posts a video
+python -m omnistore tiktok reject --id X
+```
+
+- The AI researches what's trending on TikTok *today* (sounds, formats, hashtags) and storyboards videos that ride those trends — value/entertainment first, not spam.
+- Drop raw clips or product photos into `assets/` and ffmpeg assembles a finished 1080×1920 video with the storyboard's text overlays. No assets? You still get a shoot-ready storyboard.
+- Posting uses TikTok's **official Content Posting API** with your own developer-app token — never your password. Until TikTok audits your app, posts are `SELF_ONLY` (visible just to you in-app), which doubles as a final review step.
 
 ## How it works
 

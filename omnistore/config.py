@@ -36,6 +36,9 @@ class Config:
 
     x_access_token: str = field(default_factory=lambda: os.getenv("X_ACCESS_TOKEN", "").strip())
 
+    tiktok_access_token: str = field(default_factory=lambda: os.getenv("TIKTOK_ACCESS_TOKEN", "").strip())
+    tiktok_privacy: str = field(default_factory=lambda: os.getenv("TIKTOK_PRIVACY_LEVEL", "SELF_ONLY").strip())
+
     dry_run: bool = field(default_factory=lambda: _bool("OMNISTORE_DRY_RUN", True))
     products_per_cycle: int = field(default_factory=lambda: int(os.getenv("OMNISTORE_PRODUCTS_PER_CYCLE", "3")))
     markup: float = field(default_factory=lambda: float(os.getenv("OMNISTORE_MARKUP", "2.5")))
@@ -51,6 +54,12 @@ class Config:
     @property
     def x_enabled(self) -> bool:
         return bool(self.x_access_token) and not self.dry_run
+
+    @property
+    def tiktok_enabled(self) -> bool:
+        # Note: no dry_run gate here — TikTok has its own, stronger gate:
+        # every video requires explicit per-video approval before posting.
+        return bool(self.tiktok_access_token)
 
 
 CONFIG = Config()

@@ -26,13 +26,27 @@ def main() -> None:
     sub.add_parser("autopilot", help="Run forever on a daily schedule")
     sub.add_parser("status", help="Show what the engine has launched and posted")
 
+    p_tiktok = sub.add_parser("tiktok", help="TikTok videos: plan → review → approve → post")
+    tiktok_sub = p_tiktok.add_subparsers(dest="tiktok_command", required=True)
+    p_tt_plan = tiktok_sub.add_parser("plan", help="Research trends and storyboard/render new videos")
+    p_tt_plan.add_argument("--count", type=int, default=3)
+    p_tt_plan.add_argument("--niche", help="Override the niche")
+    tiktok_sub.add_parser("queue", help="Show videos awaiting your approval")
+    p_tt_ok = tiktok_sub.add_parser("approve", help="Approve a video — this is what triggers posting")
+    p_tt_ok.add_argument("--id", required=True)
+    p_tt_no = tiktok_sub.add_parser("reject", help="Reject a queued video")
+    p_tt_no.add_argument("--id", required=True)
+
     args = parser.parse_args()
 
     if not args.command:
         parser.print_help()
         return
 
-    if args.command != "status" and not CONFIG.anthropic_api_key:
+    needs_ai = args.command in ("run", "research", "social", "autopilot") or (
+        args.command == "tiktok" and args.tiktok_command == "plan"
+    )
+    if needs_ai and not CONFIG.anthropic_api_key:
         sys.exit("ANTHROPIC_API_KEY is not set. Copy .env.example to .env and fill it in.")
 
     if args.command == "run":
@@ -52,6 +66,23 @@ def main() -> None:
     elif args.command == "autopilot":
         from . import scheduler
         scheduler.start()
+
+    elif args.command == "tiktok":
+        from . import tiktok
+        if args.tiktok_command == "plan":
+            from . import research, state as state_store
+            niche = args.niche or CONFIG.niche or state_store.load().get("niche")
+            if not niche:
+                niche = research.pick_niche()
+                print(f"AI picked niche: {niche}")
+            tiktok.plan_videos(niche, count=args.count)
+        elif args.tiktok_command == "queue":
+            tiktok.show_queue()
+        elif args.tiktok_command == "approve":
+            tiktok.approve(args.id)
+        elif args.tiktok_command == "reject":
+            tiktok.set_status(args.id, "rejected")
+            print(f"Rejected {args.id}.")
 
     elif args.command == "status":
         from . import state as state_store

@@ -77,3 +77,26 @@ class SocialPost(BaseModel):
 class SocialCalendar(BaseModel):
     theme: str = Field(description="The content theme tying this batch together")
     posts: List[SocialPost]
+
+
+class TikTokScene(BaseModel):
+    seconds: float = Field(description="Scene duration in seconds")
+    visual: str = Field(description="What is on screen: shot description or which asset to show")
+    on_screen_text: str = Field(description="Text overlay for this scene, short and punchy ('' if none)")
+    voiceover: str = Field(description="Spoken/voiceover line for this scene ('' if none)")
+
+
+class TikTokVideoPlan(BaseModel):
+    concept: str = Field(description="One-line description of the video")
+    trend_basis: str = Field(description="The specific current trend/sound/format this rides, from research")
+    hook: str = Field(description="First 1-2 seconds: the line or visual that stops the scroll")
+    scenes: List[TikTokScene] = Field(description="Scene-by-scene storyboard, 15-35s total")
+    caption: str = Field(description="Post caption, no hashtags")
+    hashtags: List[str] = Field(description="3-6 hashtags mixing trending and niche")
+    sound_suggestion: str = Field(description="Trending sound/audio to use, named specifically")
+    goal: str = Field(description="awareness, engagement or conversion")
+
+
+class TikTokBatch(BaseModel):
+    trend_summary: str = Field(description="What is trending on TikTok in this niche right now")
+    videos: List[TikTokVideoPlan]
