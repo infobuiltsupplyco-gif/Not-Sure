@@ -175,7 +175,7 @@ function Headline() {
       {letters.map((l, i) => (
         <group key={`${l.ch}-${i}`} ref={(el) => (refs.current[i] = el)}>
           <Text
-            font="/fonts/Anton.ttf"
+            font={import.meta.env.BASE_URL + 'fonts/Anton.ttf'}
             fontSize={l.size}
             color={l.color}
             anchorX="center"

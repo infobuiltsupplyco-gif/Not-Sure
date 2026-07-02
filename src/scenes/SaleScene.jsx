@@ -10,7 +10,7 @@ import { burstVertex, burstFragment } from '../shaders/burst.js'
 import { scrollState, fxState, useStore, isMobile } from '../state/store.js'
 import { localProgress, RANGES, WORLD, SALE_PRODUCTS, COLORS, FLAVORS } from '../config/sections.js'
 
-const FONT = '/fonts/helvetiker_bold.typeface.json'
+const FONT = import.meta.env.BASE_URL + 'fonts/helvetiker_bold.typeface.json'
 const STAGE_Y = -42.4 // floor top
 
 // ---------------------------------------------------------------- burst FX
