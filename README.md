@@ -3,7 +3,7 @@
 | Project | What it is | Docs |
 |---|---|---|
 | **OmniStore** 🛒⚡ | Autonomous AI dropshipping engine (Python, in `omnistore/`) | below |
-| **Vigil** 🛡️ | SaaS platform for security operations companies (React, in `src/`) | [see Vigil section](#vigil--the-operating-system-for-security-companies) |
+| **NOVA** 🎬 | Cinematic AI video & image generation studio, free forever (React, in `src/`) | [see NOVA section](#nova--cinematic-ai-motion-studio) |
 
 ---
 
@@ -118,68 +118,45 @@ python -m omnistore tiktok reject --id X
 
 ---
 
-# Vigil — The Operating System for Security Companies
 
-Vigil is a vertical SaaS platform for security operations companies — guarding,
-mobile patrol, and event security firms. It replaces the paper run sheets,
-whiteboard rosters, and group chats these companies run on today with one
-system shared by guards, dispatchers, and clients.
+# NOVA — Cinematic AI Motion Studio
 
-**Live demo:** run it locally (below), open the landing page, and click
-**"Try the live demo"** — any email/password signs you into a fully-loaded
-operations dashboard.
+Free-forever AI video & image generation studio. Type a prompt, pick an
+engine profile and a camera move, and NOVA renders a cinematic shot —
+entirely in your browser, at zero cost, with no account and no watermark.
 
-## Why this is a big business
+## Features
 
-- Physical security is a **$250B+ global market** growing ~7% a year, and most
-  of it still runs on paper. The software layer is barely penetrated outside
-  the top enterprise operators.
-- The buyer pain is acute and financial: contracts are won and lost on
-  **provable patrol coverage**. "Did the guard actually walk the site?" is a
-  question paper can't answer and Vigil answers with a GPS-stamped scan log.
-- Per-guard pricing ($12–$29/guard/month) scales with the customer. A
-  100-guard company is $1.4k–$3.5k MRR from a single logo, and mid-size
-  security firms routinely run 100–2,000 guards.
-- The client portal is the growth loop: every weekly report a security company
-  sends its clients is a Vigil-branded proof-of-value in front of the next
-  prospective buyer.
+- **Create studio** — prompt box, video/image modes, 6 engine profiles,
+  11 motion presets (crash zoom, 360 orbit, bullet time, FPV dive, …),
+  4 aspect ratios, 3–10s durations, seeded rerolls.
+- **Real exports** — download clips as WebM and stills as PNG.
+- **Library** — every generation is saved locally (localStorage) and
+  replays deterministically from its seed.
+- **$0 architecture** — the free engine is a procedural renderer
+  (`src/engine/engine.ts`) that draws seeded cinematic scenes on a canvas.
+  Nothing is uploaded and there are no server costs.
 
-## What's in the product
+## Plugging in hosted models
 
-| Area | What it does |
-|---|---|
-| **Operations board** | Live stat tiles, 14-day incident trend chart, real-time patrol activity feed |
-| **Incidents** | Search/filter, expandable detail, status workflow (open → investigating → resolved), 60-second logging modal — new incidents persist locally |
-| **Guards** | Roster view with duty status, licence (CoA) numbers, shift end times |
-| **Sites** | Contract cards with per-site checkpoint compliance meters and monthly contract value |
-| **Reports** | One-click client-ready weekly summaries generated from live data |
-| **Marketing site** | Positioning, feature tour, per-guard pricing, testimonials |
+The studio is provider-agnostic: prompt, engine profile, motion preset,
+aspect and duration flow through one interface. To route a profile to a
+hosted video/image model, replace the render path in
+`src/engine/engine.ts` with the provider API call and supply your own key.
+(Hosted providers bill per generation — that part is never free.)
 
-## Stack
-
-- **React 18 + TypeScript + Vite** — fast, typed, zero-config builds
-- **React Router (hash routing)** — deploys as a static site anywhere,
-  including GitHub Pages, with no server rewrites
-- **Hand-rolled CSS design system** — dark-first, no framework dependency
-- **localStorage persistence** — the demo keeps your incidents and session
-  across reloads; swap `src/data/store.tsx` for a real API when the backend
-  lands
-
-## Run it
+## Development
 
 ```bash
 npm install
-npm run dev      # → http://localhost:5173
-npm run build    # type-checks and outputs static site to dist/
+npm run dev     # local dev server
+npm run build   # type-check + production build to dist/
 ```
 
-## Roadmap to revenue
+Deploys to GitHub Pages automatically on push to `main`
+(`.github/workflows/deploy.yml`); the app uses a hash router so it works
+under the `/Not-Sure/` base path.
 
-1. **Now (this repo):** investor/customer-ready demo — marketing site plus a
-   working dashboard with realistic seeded data.
-2. **Pilot:** wire the store to a hosted Postgres + auth backend; onboard 2–3
-   local security firms free in exchange for case studies.
-3. **Mobile:** guard-facing PWA (checkpoint NFC scans, offline incident
-   capture) — the data model in `src/data/types.ts` already supports it.
-4. **Monetise:** Stripe billing on the existing per-guard plans; client-portal
-   seats as the expansion lever.
+## Stack
+
+Vite · React 18 · TypeScript · react-router (hash) · zero runtime dependencies beyond React

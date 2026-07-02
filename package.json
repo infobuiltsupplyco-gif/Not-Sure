@@ -1,8 +1,8 @@
 {
-  "name": "vigil",
+  "name": "nova-studio",
   "private": true,
   "version": "1.0.0",
-  "description": "Vigil — the operating system for security operations companies",
+  "description": "NOVA — cinematic AI video & image generation studio, free forever",
   "type": "module",
   "scripts": {
     "dev": "vite",
