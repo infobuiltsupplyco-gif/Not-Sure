@@ -19,7 +19,17 @@
 
 Every cycle builds on the last: launched products, post history, and the chosen niche persist in `data/state.json`.
 
-## Quick start
+## Get your AI link (cloud, ~5 minutes)
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/infobuiltsupplyco-gif/Not-Sure)
+
+1. Click the button, sign in to Render (free account, hosting is ~$7/mo)
+2. Paste your `ANTHROPIC_API_KEY` and pick a dashboard password when asked
+3. Render builds it and gives you **your permanent AI link** — `https://omnistore-….onrender.com`
+
+That URL is your control room, password-protected, with the autopilot already running inside it (dry-run until you add store/social keys in Render's environment settings).
+
+## Quick start (run it on your own computer instead)
 
 ```bash
 pip install -r requirements.txt

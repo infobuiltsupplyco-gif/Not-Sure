@@ -41,6 +41,12 @@ class Config:
     # Fully hands-off TikTok: rendered videos post immediately, no approval step.
     tiktok_autopost: bool = field(default_factory=lambda: _bool("OMNISTORE_TIKTOK_AUTOPOST", False))
 
+    # Protects the web control room. When set, the dashboard binds publicly
+    # (for cloud hosting) and requires this password to log in.
+    dashboard_password: str = field(default_factory=lambda: os.getenv("OMNISTORE_DASHBOARD_PASSWORD", "").strip())
+    # Run the autopilot scheduler inside the web process (for one-service cloud deploys).
+    autopilot_in_web: bool = field(default_factory=lambda: _bool("OMNISTORE_AUTOPILOT", False))
+
     dry_run: bool = field(default_factory=lambda: _bool("OMNISTORE_DRY_RUN", True))
     products_per_cycle: int = field(default_factory=lambda: int(os.getenv("OMNISTORE_PRODUCTS_PER_CYCLE", "3")))
     markup: float = field(default_factory=lambda: float(os.getenv("OMNISTORE_MARKUP", "2.5")))

@@ -27,7 +27,7 @@ def main() -> None:
     sub.add_parser("status", help="Show what the engine has launched and posted")
 
     p_web = sub.add_parser("web", help="Launch the browser control room")
-    p_web.add_argument("--port", type=int, default=8787)
+    p_web.add_argument("--port", type=int, default=None)
 
     p_tiktok = sub.add_parser("tiktok", help="TikTok videos: plan → review → approve → post")
     tiktok_sub = p_tiktok.add_subparsers(dest="tiktok_command", required=True)

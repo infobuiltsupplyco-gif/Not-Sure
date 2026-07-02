@@ -11,7 +11,7 @@ import html
 import threading
 from pathlib import Path
 
-from flask import Flask, redirect, send_file
+from flask import Flask, Response, redirect, request, send_file
 
 from . import state as state_store
 from .config import CONFIG
@@ -19,6 +19,21 @@ from .config import CONFIG
 app = Flask(__name__)
 
 _job: dict[str, str | None] = {"name": None}
+
+
+@app.before_request
+def _require_login():
+    """Password-protect the whole dashboard when hosted on a public URL."""
+    if not CONFIG.dashboard_password:
+        return None  # local-only mode (binds 127.0.0.1), no login needed
+    auth = request.authorization
+    if auth and auth.password == CONFIG.dashboard_password:
+        return None
+    return Response(
+        "OmniStore: login required (any username + your dashboard password)",
+        401,
+        {"WWW-Authenticate": 'Basic realm="OmniStore"'},
+    )
 
 
 def _background(name: str, fn, *args) -> bool:
@@ -179,6 +194,20 @@ def serve_video(entry_id: str):
     return ("not found", 404)
 
 
-def start(port: int = 8787) -> None:
-    print(f"\n  OmniStore control room → http://127.0.0.1:{port}\n")
-    app.run(host="127.0.0.1", port=port, debug=False)
+def start(port: int | None = None) -> None:
+    import os
+
+    port = port or int(os.getenv("PORT", "8787"))
+
+    if CONFIG.autopilot_in_web:
+        from . import scheduler
+        threading.Thread(target=scheduler.start, daemon=True).start()
+        print("  autopilot: running inside the web process")
+
+    if CONFIG.dashboard_password:
+        # Cloud mode: bind publicly, protected by the password gate above.
+        print(f"\n  OmniStore control room live on port {port} (password protected)\n")
+        app.run(host="0.0.0.0", port=port, debug=False)
+    else:
+        print(f"\n  OmniStore control room → http://127.0.0.1:{port}\n")
+        app.run(host="127.0.0.1", port=port, debug=False)
