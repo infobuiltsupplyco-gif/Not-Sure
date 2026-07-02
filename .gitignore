@@ -1,0 +1,13 @@
+# Secrets
+.env
+
+# Runtime artifacts
+data/
+output/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
