@@ -1,0 +1,89 @@
+# OmniStore autopilot on GitHub's free runners — $0 hosting.
+#
+# Setup (one time): repo Settings → Secrets and variables → Actions →
+#   Secrets:   ANTHROPIC_API_KEY  (required; pay-per-use API key)
+#              SHOPIFY_STORE_DOMAIN / SHOPIFY_ACCESS_TOKEN / META_* /
+#              X_ACCESS_TOKEN / TIKTOK_ACCESS_TOKEN  (optional, for going live)
+#   Variables: OMNISTORE_DRY_RUN=false           (when ready to publish)
+#              OMNISTORE_TIKTOK_AUTOPOST=true    (hands-off video posting)
+#              OMNISTORE_NICHE / OMNISTORE_MODEL (optional)
+name: OmniStore Autopilot
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 9 * * *"    # full cycle: research → launch → market → social
+    - cron: "30 9 * * *"   # tiktok video 1
+    - cron: "0 14 * * *"   # tiktok video 2
+    - cron: "0 19 * * *"   # tiktok video 3
+
+permissions:
+  contents: write
+
+concurrency:
+  group: omnistore-autopilot
+
+jobs:
+  autopilot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r requirements.txt
+
+      - name: Pick this slot's job
+        id: slot
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.event.schedule }}" = "0 9 * * *" ]; then
+            echo "cmd=cycle" >> "$GITHUB_OUTPUT"
+          else
+            echo "cmd=tiktok" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run the AI
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          META_PAGE_ID: ${{ secrets.META_PAGE_ID }}
+          META_PAGE_ACCESS_TOKEN: ${{ secrets.META_PAGE_ACCESS_TOKEN }}
+          META_IG_USER_ID: ${{ secrets.META_IG_USER_ID }}
+          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
+          TIKTOK_ACCESS_TOKEN: ${{ secrets.TIKTOK_ACCESS_TOKEN }}
+          OMNISTORE_DRY_RUN: ${{ vars.OMNISTORE_DRY_RUN || 'true' }}
+          OMNISTORE_TIKTOK_AUTOPOST: ${{ vars.OMNISTORE_TIKTOK_AUTOPOST || 'false' }}
+          OMNISTORE_NICHE: ${{ vars.OMNISTORE_NICHE || '' }}
+          OMNISTORE_MODEL: ${{ vars.OMNISTORE_MODEL || '' }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::Add ANTHROPIC_API_KEY under Settings → Secrets and variables → Actions → Secrets"
+            exit 1
+          fi
+          if [ "${{ steps.slot.outputs.cmd }}" = "cycle" ]; then
+            python -m omnistore run
+          else
+            python -m omnistore tiktok plan --count 1
+          fi
+
+      - name: Remember what was done (commit state back)
+        run: |
+          git config user.name "omnistore-autopilot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f data/*.json 2>/dev/null || true
+          if ! git diff --cached --quiet; then
+            git commit -m "autopilot: update engine state [skip ci]"
+            git pull --rebase origin ${{ github.ref_name }} && git push
+          fi
+
+      - name: Upload everything the AI produced (drafts, videos, kits)
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: omnistore-output-${{ github.run_number }}
+          path: output/
+          if-no-files-found: ignore
+          retention-days: 14
