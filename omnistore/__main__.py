@@ -26,6 +26,9 @@ def main() -> None:
     sub.add_parser("autopilot", help="Run forever on a daily schedule")
     sub.add_parser("status", help="Show what the engine has launched and posted")
 
+    p_web = sub.add_parser("web", help="Launch the browser control room")
+    p_web.add_argument("--port", type=int, default=8787)
+
     p_tiktok = sub.add_parser("tiktok", help="TikTok videos: plan → review → approve → post")
     tiktok_sub = p_tiktok.add_subparsers(dest="tiktok_command", required=True)
     p_tt_plan = tiktok_sub.add_parser("plan", help="Research trends and storyboard/render new videos")
@@ -66,6 +69,10 @@ def main() -> None:
     elif args.command == "autopilot":
         from . import scheduler
         scheduler.start()
+
+    elif args.command == "web":
+        from . import web
+        web.start(port=args.port)
 
     elif args.command == "tiktok":
         from . import tiktok

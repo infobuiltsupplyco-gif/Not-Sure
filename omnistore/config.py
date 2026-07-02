@@ -38,6 +38,8 @@ class Config:
 
     tiktok_access_token: str = field(default_factory=lambda: os.getenv("TIKTOK_ACCESS_TOKEN", "").strip())
     tiktok_privacy: str = field(default_factory=lambda: os.getenv("TIKTOK_PRIVACY_LEVEL", "SELF_ONLY").strip())
+    # Fully hands-off TikTok: rendered videos post immediately, no approval step.
+    tiktok_autopost: bool = field(default_factory=lambda: _bool("OMNISTORE_TIKTOK_AUTOPOST", False))
 
     dry_run: bool = field(default_factory=lambda: _bool("OMNISTORE_DRY_RUN", True))
     products_per_cycle: int = field(default_factory=lambda: int(os.getenv("OMNISTORE_PRODUCTS_PER_CYCLE", "3")))

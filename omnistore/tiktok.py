@@ -101,8 +101,15 @@ def plan_videos(niche: str, count: int = 3) -> list[dict[str, Any]]:
               + (f" → {video_path}" if video_path else "  (storyboard only — add clips to assets/ to auto-render)"))
 
     _save_queue(queue)
-    print(f"\n{len(created)} video(s) queued. Review with `python -m omnistore tiktok queue`, "
-          f"then `python -m omnistore tiktok approve --id <ID>` to post.")
+
+    if CONFIG.tiktok_autopost:
+        for entry in created:
+            if entry["video_path"]:
+                approve(entry["id"])
+        print(f"\n{len(created)} video(s) processed in AUTOPOST mode.")
+    else:
+        print(f"\n{len(created)} video(s) queued. Review with `python -m omnistore tiktok queue`, "
+              f"then `python -m omnistore tiktok approve --id <ID>` to post.")
     return created
 
 

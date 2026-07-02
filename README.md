@@ -25,9 +25,12 @@ Every cycle builds on the last: launched products, post history, and the chosen 
 pip install -r requirements.txt
 cp .env.example .env      # add your ANTHROPIC_API_KEY (the only required key)
 
+python -m omnistore web          # ★ browser control room → http://127.0.0.1:8787
 python -m omnistore run          # one full cycle
-python -m omnistore autopilot    # run forever: daily launches + 3x/day social
+python -m omnistore autopilot    # run forever: daily launches, 3x/day social, 3x/day TikTok
 ```
+
+**The control room** (`python -m omnistore web`) is the easiest way to drive the AI: run cycles, generate TikTok videos, preview them in the page, and approve/reject with one click.
 
 Other commands:
 
@@ -50,9 +53,14 @@ python -m omnistore status                            # what the engine has done
 | Instagram | requires an image pipeline (see roadmap) | Posts queued with an `image_prompt` you can use |
 | TikTok | developer app + `video.publish` OAuth token | Videos still render + queue; you post manually |
 
-## TikTok: AI-made videos, human-approved
+## TikTok: AI-made videos, posted 3x/day
 
-TikTok gets special treatment — every video needs **your explicit approval** before it posts, no exceptions:
+Two modes, your choice:
+
+- **Approval queue (default):** every video waits for your one-click approval in the control room (or CLI) before posting.
+- **Autopost (`OMNISTORE_TIKTOK_AUTOPOST=true`):** on autopilot the engine generates and posts a fresh trend-riding video at 09:30, 14:00 and 19:00 UTC — fully hands-off.
+
+CLI flow:
 
 ```bash
 python -m omnistore tiktok plan            # research live TikTok trends → storyboard + render videos
