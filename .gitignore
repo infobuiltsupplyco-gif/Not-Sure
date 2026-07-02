@@ -1,3 +1,18 @@
+# Secrets
+.env
+
+# OmniStore runtime artifacts
+data/
+output/
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# Node / Vite (Vigil)
 node_modules
 dist
 dist-ssr

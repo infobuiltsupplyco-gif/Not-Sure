@@ -1,0 +1,25 @@
+# One-click deploy: https://render.com/deploy?repo=<this repo's GitHub URL>
+# You'll be asked for the two `sync: false` values during setup:
+#   - ANTHROPIC_API_KEY            (from https://platform.claude.com)
+#   - OMNISTORE_DASHBOARD_PASSWORD (choose any password — protects your dashboard)
+services:
+  - type: web
+    name: omnistore
+    runtime: docker
+    plan: starter
+    healthCheckPath: /
+    disk:
+      name: omnistore-data
+      mountPath: /app/data
+      sizeGB: 1
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: OMNISTORE_DASHBOARD_PASSWORD
+        sync: false
+      - key: OMNISTORE_AUTOPILOT
+        value: "true"
+      - key: OMNISTORE_DRY_RUN
+        value: "true"
+      - key: OMNISTORE_TIKTOK_AUTOPOST
+        value: "false"
