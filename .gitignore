@@ -1,7 +1,7 @@
 # Secrets
 .env
 
-# Runtime artifacts
+# OmniStore runtime artifacts
 data/
 output/
 
@@ -11,3 +11,12 @@ __pycache__/
 *.egg-info/
 .venv/
 venv/
+
+# Node / Vite (Vigil)
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+npm-debug.log*
+*.tsbuildinfo
