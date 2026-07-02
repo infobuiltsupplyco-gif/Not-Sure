@@ -7,12 +7,15 @@ structured outputs via `messages.parse`.
 
 from __future__ import annotations
 
+import os
 from typing import Type, TypeVar
 
 import anthropic
 from pydantic import BaseModel
 
-MODEL = "claude-opus-4-8"
+# Default is the strongest model; set OMNISTORE_MODEL=claude-haiku-4-5 for
+# the cheapest possible runs (~5x less per token, weaker research).
+MODEL = os.getenv("OMNISTORE_MODEL", "").strip() or "claude-opus-4-8"
 
 SYSTEM_PROMPT = """You are the commerce brain of OmniStore, an autonomous dropshipping engine.
 

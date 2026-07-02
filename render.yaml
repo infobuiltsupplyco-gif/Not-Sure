@@ -1,24 +1,21 @@
 # One-click deploy: https://render.com/deploy?repo=<this repo's GitHub URL>
-# You'll be asked for the two `sync: false` values during setup:
-#   - ANTHROPIC_API_KEY            (from https://platform.claude.com)
-#   - OMNISTORE_DASHBOARD_PASSWORD (choose any password — protects your dashboard)
+# FREE plan — no card required. Note: free services sleep after ~15 min idle
+# (the page wakes when you open it) and don't keep disk state between deploys.
+# The always-on scheduling runs for free in GitHub Actions instead — see
+# .github/workflows/autopilot.yml
 services:
   - type: web
     name: omnistore
     runtime: docker
-    plan: starter
+    plan: free
     healthCheckPath: /
-    disk:
-      name: omnistore-data
-      mountPath: /app/data
-      sizeGB: 1
     envVars:
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: OMNISTORE_DASHBOARD_PASSWORD
         sync: false
       - key: OMNISTORE_AUTOPILOT
-        value: "true"
+        value: "false"
       - key: OMNISTORE_DRY_RUN
         value: "true"
       - key: OMNISTORE_TIKTOK_AUTOPOST

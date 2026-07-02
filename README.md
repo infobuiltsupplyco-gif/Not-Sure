@@ -19,15 +19,19 @@
 
 Every cycle builds on the last: launched products, post history, and the chosen niche persist in `data/state.json`.
 
-## Get your AI link (cloud, ~5 minutes)
+## Get your AI link ($0 hosting, ~5 minutes)
 
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/infobuiltsupplyco-gif/Not-Sure)
 
-1. Click the button, sign in to Render (free account, hosting is ~$7/mo)
+1. Click the button, sign in to Render — **free plan, no card required**
 2. Paste your `ANTHROPIC_API_KEY` and pick a dashboard password when asked
 3. Render builds it and gives you **your permanent AI link** — `https://omnistore-….onrender.com`
 
-That URL is your control room, password-protected, with the autopilot already running inside it (dry-run until you add store/social keys in Render's environment settings).
+That URL is your password-protected control room. It naps when idle (free tier) and wakes when you open it.
+
+**The always-on autopilot is also free**: `.github/workflows/autopilot.yml` runs the AI on GitHub's own servers — full cycle daily + 3 TikTok slots — at no hosting cost. Just add `ANTHROPIC_API_KEY` under repo *Settings → Secrets and variables → Actions*, and it runs on schedule (or trigger it from the Actions tab). Drafts, videos and marketing kits land as downloadable artifacts on each run.
+
+**The one unavoidable cost:** the Anthropic API key is pay-per-use — that's the AI's actual thinking, billed by Anthropic, not by this project. Typical cycles run cents-to-a-few-dollars; set `OMNISTORE_MODEL=claude-haiku-4-5` for the cheapest runs.
 
 ## Quick start (run it on your own computer instead)
 
